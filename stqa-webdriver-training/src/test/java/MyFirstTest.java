@@ -26,9 +26,33 @@ public class MyFirstTest {
         driver.findElement(By.name("btnK")).click();
     }
 
+    @Test
+    public void loginTest() {
+        navigateTo("http://localhost/litecart/admin/");
+        login("admin", "admin");
+    }
+
     @After
     public void stop() {
         driver.quit();
         driver = null;
+    }
+
+    private void navigateTo(String webPage) {
+        driver.get(webPage);
+    }
+
+    private void login(String username, String password) {
+        putText(By.name("username"), username);
+        putText(By.name("password"), password);
+        click(By.name("login"));
+    }
+
+    private void click(By locator) {
+        driver.findElement(locator).click();
+    }
+
+    private void putText(By locator, String text) {
+        driver.findElement(locator).sendKeys(text);
     }
 }
