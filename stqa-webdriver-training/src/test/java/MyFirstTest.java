@@ -1,10 +1,18 @@
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.InvalidSelectorException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
 
 public class MyFirstTest {
     private WebDriver driver;
@@ -12,7 +20,6 @@ public class MyFirstTest {
 
     @Before
     public void start() {
-        //System.setProperty("webdriver.chrome.driver", "C:\\Tools\\chromedriver.exe");
         driver = new ChromeDriver();
         wait = new WebDriverWait(driver, 10);
         driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
@@ -32,6 +39,14 @@ public class MyFirstTest {
         login("admin", "admin");
     }
 
+    @Test
+    public void Task7() {
+        navigateTo("http://localhost/litecart/");
+        List<WebElement> productStickerQuantity = driver.findElements(By.xpath("//li[count(.//div[contains(@class,'sticker')])=1]"));
+        List<WebElement> productQuantity = driver.findElements(By.xpath("//li[contains(@class,'product')]"));
+        assertEquals(productQuantity.size(), productStickerQuantity.size());
+    }
+
     @After
     public void stop() {
         driver.quit();
@@ -49,10 +64,27 @@ public class MyFirstTest {
     }
 
     private void click(By locator) {
-        driver.findElement(locator).click();
+        if (isElementPresent(driver, locator))
+            driver.findElement(locator).click();
     }
 
     private void putText(By locator, String text) {
-        driver.findElement(locator).sendKeys(text);
+        if (isElementPresent(driver, locator))
+            driver.findElement(locator).sendKeys(text);
+    }
+
+    boolean isElementPresent(WebDriver driver, By locator) {
+        try {
+            driver.findElement(locator);
+            return true;
+        } catch (InvalidSelectorException ex) {
+            throw ex;
+        } catch (NoSuchElementException ex) {
+            return false;
+        }
+    }
+
+    boolean areElementsPresent(WebDriver driver, By locator) {
+        return driver.findElements(locator).size() > 0;
     }
 }
